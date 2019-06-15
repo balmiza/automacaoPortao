@@ -35,9 +35,14 @@ def action(msg):
                         pulsoPortao()
                         #GPIO.output(relePortao, 0)
                         telegram_bot.sendMessage (chat_id, message)
-
+                        
+        if 'Ajuda' in command:
+                telegram_bot.sendMessage (chat_id, "Abrir portao")
+                telegram_bot.sendMessage (chat_id, "Fechar portao")
+                telegram_bot.sendMessage (chat_id, "Ajuda")
+                        
 telegram_bot = telepot.Bot('812788093:AAExMbZKwLDp_AHbwlaf7CVn6cWo-ci_tnc')
-print (telegram_bot.getMe())
+# print (telegram_bot.getMe()) # Linha comentada pois dava erro ao iniciar no boot do linux, acredito que or timeout ou algo assim
 
 MessageLoop(telegram_bot, action).run_as_thread()
 print 'Up and Running....'
