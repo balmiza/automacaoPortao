@@ -1,4 +1,4 @@
-!/usr/bin/env python
+#!/usr/bin/env python
 
 import time, datetime
 import RPi.GPIO as GPIO
@@ -27,6 +27,12 @@ def pulsoPortao():
         time.sleep(1)
         GPIO.output(relePortao, 0)
 
+def checkPortao():
+        if (GPIO.input(abertoPortao) == 1):
+                return "aberto"                 # portao aberto
+        elif (GPIO.input(abertoPortao) == 0):
+                return "fechado"                # portao fechado
+
 def action(msg):
         global ultimoAcionamento
         chat_id = msg['chat']['id']
@@ -37,8 +43,10 @@ def action(msg):
                 message = "Portao aberto "
                 if 'portao' in command:
                         message = message + "com sucesso"
-                        pulsoPortao()
-                        #GPIO.output(relePortao, 1)
+                        if (checkPortao() == "aberto"):
+                                message = "Portao ja esta aberto."
+                        else:
+                                pulsoPortao()
                         telegram_bot.sendMessage (chat_id, message)
                 ultimoAcionamento = datetime.datetime.now()
 
@@ -46,8 +54,10 @@ def action(msg):
                 message = "Portao fechado "
                 if 'portao' in command:
                         message = message + "com sucesso"
-                        pulsoPortao()
-                        #GPIO.output(relePortao, 0)
+                        if (checkPortao() == "fechado"):
+                                message = "Portao ja esta fechado."
+                        else:
+                                pulsoPortao()
                         telegram_bot.sendMessage (chat_id, message)
                 ultimoAcionamento = datetime.datetime.now()
 
@@ -78,4 +88,3 @@ print 'Up and Running....'
 
 while 1:
         time.sleep(10)
-
