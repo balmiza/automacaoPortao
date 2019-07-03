@@ -39,29 +39,29 @@ def action(msg):
         command = msg['text']
         print 'Received: %s' % command
 
-        if 'Abrir' in command:
+        if (('Abrir' in command) or ('abrir' in command)):
                 message = "Portao aberto "
-                if 'portao' in command:
-                        message = message + "com sucesso"
-                        if (checkPortao() == "aberto"):
-                                message = "Portao ja esta aberto."
-                        else:
-                                pulsoPortao()
-                        telegram_bot.sendMessage (chat_id, message)
-                ultimoAcionamento = datetime.datetime.now()
+                #if 'portao' in command:
+                message = message + "com sucesso"
+                if (checkPortao() == "aberto"):
+                        message = "Portao ja esta aberto."
+                else:
+                        pulsoPortao()
+                        ultimoAcionamento = datetime.datetime.now()
+                telegram_bot.sendMessage (chat_id, message)
 
-        if 'Fechar' in command:
+        if (('Fechar' in command) or ('fechar' in command)):
                 message = "Portao fechado "
-                if 'portao' in command:
-                        message = message + "com sucesso"
-                        if (checkPortao() == "fechado"):
-                                message = "Portao ja esta fechado."
-                        else:
-                                pulsoPortao()
-                        telegram_bot.sendMessage (chat_id, message)
-                ultimoAcionamento = datetime.datetime.now()
+                #if 'portao' in command:
+                message = message + "com sucesso"
+                if (checkPortao() == "fechado"):
+                        message = "Portao ja esta fechado."
+                else:
+                        pulsoPortao()
+                        ultimoAcionamento = datetime.datetime.now()
+                telegram_bot.sendMessage (chat_id, message)
 
-        if 'Estado' in command:
+        if (('Portao' in command) or ('portao' in command)):
                 if(GPIO.input(abertoPortao) == 1):
                         message = "O portao esta aberto"
                 elif(GPIO.input(abertoPortao) == 0):
@@ -70,15 +70,16 @@ def action(msg):
                         message = "Nem aberto e nem fechado"
                 telegram_bot.sendMessage (chat_id, message)
 
-        if 'Relatorio' in command:
+        if (('Relatorio' in command) or ('relatorio' in command)):
                 telegram_bot.sendMessage (chat_id, "Ultimo acionamento: " + str(ultimoAcionamento))
 
-        if 'Ajuda' in command:
-                telegram_bot.sendMessage (chat_id, "Abrir portao")
-                telegram_bot.sendMessage (chat_id, "Fechar portao")
-                telegram_bot.sendMessage (chat_id, "Estado")
-                telegram_bot.sendMessage (chat_id, "Relatorio")
-                telegram_bot.sendMessage (chat_id, "Ajuda")
+        if (('Ajuda' in command) or ('ajuda' in command)):
+                telegram_bot.sendMessage (chat_id, "Abrir | abrir")
+                telegram_bot.sendMessage (chat_id, "Fechar | fechar")
+                telegram_bot.sendMessage (chat_id, "Portao | portao")
+                telegram_bot.sendMessage (chat_id, "Relatorio | relatorio")
+                telegram_bot.sendMessage (chat_id, "Ajuda | ajuda")
+                telegram_bot.sendMessage (chat_id, "Duvidas ou problemas, entrar em contato com Felipe pelo telefone (11)965370735 ou via email: balmiza.felipe@gmail.com")
 
 telegram_bot = telepot.Bot('812788093:AAExMbZKwLDp_AHbwlaf7CVn6cWo-ci_tnc')
 #print (telegram_bot.getMe())
