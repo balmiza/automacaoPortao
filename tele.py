@@ -67,7 +67,7 @@ def action(msg):
                         print "Desculpe, nao entendi!"
                         telegram_bot.sendMessage (chat_id, "Desculpe, nao entendi!")
 
-        if ((command == 'Abrir') or (command == 'abrir')):
+        elif ((command == 'Abrir') or (command == 'abrir')):
                 message = "Portao aberto "
                 #if 'portao' in command:
                 message = message + "com sucesso."
@@ -78,7 +78,7 @@ def action(msg):
                         ultimoAcionamento = datetime.datetime.now()
                 telegram_bot.sendMessage (chat_id, message)
 
-        if ((command == 'Fechar') or (command == 'fechar')):
+        elif ((command == 'Fechar') or (command == 'fechar')):
                 message = "Portao fechado "
                 #if 'portao' in command:
                 message = message + "com sucesso."
@@ -89,7 +89,7 @@ def action(msg):
                         ultimoAcionamento = datetime.datetime.now()
                 telegram_bot.sendMessage (chat_id, message)
 
-        if ((command == 'Portao') or (command == 'portao')):
+        elif ((command == 'Portao') or (command == 'portao')):
                 if(GPIO.input(abertoPortao) == 1):
                         message = "O portao esta aberto."
                 elif(GPIO.input(abertoPortao) == 0):
@@ -98,10 +98,10 @@ def action(msg):
                         message = "Nem aberto e nem fechado."
                 telegram_bot.sendMessage (chat_id, message)
 
-        if ((command == 'Relatorio') or (command == 'relatorio')):
+        elif ((command == 'Relatorio') or (command == 'relatorio')):
                 telegram_bot.sendMessage (chat_id, "Ultimo acionamento: " + str(ultimoAcionamento))
 
-        if (('Ajuda' in command) or ('ajuda' in command)):
+        elif (('Ajuda' in command) or ('ajuda' in command)):
                 telegram_bot.sendMessage (chat_id, "Abrir [tempo em segundos]")
                 telegram_bot.sendMessage (chat_id, "Abrir | abrir")
                 telegram_bot.sendMessage (chat_id, "Fechar | fechar")
@@ -109,6 +109,10 @@ def action(msg):
                 telegram_bot.sendMessage (chat_id, "Relatorio | relatorio")
                 telegram_bot.sendMessage (chat_id, "Ajuda | ajuda")
                 telegram_bot.sendMessage (chat_id, "Duvidas ou problemas, entrar em contato com Felipe pelo telefone (11)965370735 ou via email: balmiza.felipe@gmail.com")
+
+        else:
+                print "Desculpe, nao entendi!!!"
+                telegram_bot.sendMessage (chat_id, "Desculpe, nao entendi!!!")
 
 telegram_bot = telepot.Bot('812788093:AAExMbZKwLDp_AHbwlaf7CVn6cWo-ci_tnc')
 #print (telegram_bot.getMe())
