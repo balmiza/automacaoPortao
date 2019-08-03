@@ -59,6 +59,7 @@ def action(msg):
                                 if (checkPortao() == "fechado"):
                                         print "Portao fechado com sucesso."
                                         telegram_bot.sendMessage (chat_id, "Portao fechado com sucesso.")
+                                        ultimoAcionamento = datetime.datetime.now()
                                 else:
                                         print "Houve um erro ao fechar o portao, favor checar se esta mesmo fechado."
                                         telegram_bot.sendMessage (chat_id, "Houve um erro ao fechar o portao, favor checar se esta mesmo fechado.")
