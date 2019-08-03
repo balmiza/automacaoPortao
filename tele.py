@@ -9,6 +9,8 @@ from telepot.loop import MessageLoop
 relePortao = 18
 abertoPortao = 23
 ultimoAcionamento = "Portao ainda nao foi acionado"
+ultimo_usuario = 1
+ativado = 0     # 0 - Ativado     1 - Desativado
 #fechadoPortao = 24
 
 # configurando IOs
@@ -34,8 +36,12 @@ def checkPortao():
                 return "fechado"                # portao fechado
 
 def action(msg):
+        global ultimo_usuario
         global ultimoAcionamento
+        global ativado
         chat_id = msg['chat']['id']
+        ultimo_usuario = chat_id
+        #print chat_id
         command = msg['text']
         print 'Received: %s' % command
 
@@ -111,6 +117,19 @@ def action(msg):
                 telegram_bot.sendMessage (chat_id, "Ajuda | ajuda")
                 telegram_bot.sendMessage (chat_id, "Duvidas ou problemas, entrar em contato com Felipe pelo telefone (11)965370735 ou via email: balmiza.felipe@gmail.com")
 
+        elif ((command == "Ativar") or (command == "ativar")):
+                if (ativado == 0):
+                        telegram_bot.sendMessage (chat_id, "Ja esta ativado")
+                else:
+                        telegram_bot.sendMessage (chat_id, "Sistema ativado")
+                        ativado = 0
+
+        elif ((command == "Desativar") or (command == "desativar")):
+                if (ativado == 1):
+                        telegram_bot.sendMessage (chat_id, "Ja esta desativado")
+                else:
+                        telegram_bot.sendMessage (chat_id, "Sistema desativado")
+                        ativado = 1
         else:
                 print "Desculpe, nao entendi!!!"
                 telegram_bot.sendMessage (chat_id, "Desculpe, nao entendi!!!")
@@ -120,6 +139,21 @@ telegram_bot = telepot.Bot('812788093:AAExMbZKwLDp_AHbwlaf7CVn6cWo-ci_tnc')
 
 MessageLoop(telegram_bot, action).run_as_thread()
 print 'Up and Running....'
+chat_id_lista = [892724002, 873945561, 875826898]
+tamanho_lista = len(chat_id_lista)
+portao_inicial = checkPortao()
 
 while 1:
-        time.sleep(10)
+        time.sleep(1)
+        #print ultimo_usuario
+        portao = checkPortao()
+        if ((portao != portao_inicial) and (ativado == 0)):
+                if (portao == "aberto"):
+                        for i in range(tamanho_lista):
+                                if (chat_id_lista[i] != ultimo_usuario):
+                                        telegram_bot.sendMessage (chat_id_lista[i], "Portao foi aberto")
+                                portao_inicial = portao
+                elif (portao == "fechado"):
+                        for i in range(tamanho_lista):
+                                if (chat_id_lista[i] != ultimo_usuario):
+                                        telegram_bot.sendMessage (chat_id_lista[i], "Portao foi fechado")
