@@ -157,3 +157,4 @@ while 1:
                         for i in range(tamanho_lista):
                                 if (chat_id_lista[i] != ultimo_usuario):
                                         telegram_bot.sendMessage (chat_id_lista[i], "Portao foi fechado")
+                                portao_inicial = portao
