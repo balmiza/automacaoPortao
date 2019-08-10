@@ -24,6 +24,14 @@ GPIO.setup(abertoPortao, GPIO.IN, pull_up_down=GPIO.PUD_UP)     # gpio 23 pull u
 #GPIO.setup(fechadoPortao, GPIO.IN)                             # gpio 24 como entrada
 #GPIO.setup(fechadoPortao, GPIO.IN, pull_up_down=GPIO.PUD_UP)   # gpio 24 pull up
 
+def log(texto):
+        try:
+                file = open("log.txt","a")
+                file.write(texto + "\n")
+                file.close()
+        except:
+                print "Falha ao gravar log"
+
 def pulsoPortao():
         GPIO.output(relePortao, 1)
         time.sleep(1)
@@ -39,11 +47,14 @@ def action(msg):
         global ultimo_usuario
         global ultimoAcionamento
         global ativado
+        #print msg
         chat_id = msg['chat']['id']
         ultimo_usuario = chat_id
-        #print chat_id
+        print chat_id
         command = msg['text']
         print 'Received: %s' % command
+        texto = str(chat_id) + " Received: " + command + " " + str(datetime.datetime.now())
+        log(texto)
 
         if ((('Abrir' in command) or ('abrir' in command)) and (len(command) > 6)):
                 #print 'Entrou no if'
@@ -53,36 +64,52 @@ def action(msg):
                         if (tempo < 11):
                                 print "Favor inserir tempo maior que 10 s"
                                 telegram_bot.sendMessage (chat_id, "Favor inserir tempo maior que 10 s")
+                                texto = str(chat_id) + " Favor inserir tempo maior que 10 s " + str(datetime.datetime.now())
+                                log(texto)
                         else:
                                 print "Abrindo.."
                                 telegram_bot.sendMessage (chat_id, "Abrindo..")
+                                texto = str(chat_id) + " Abrindo.. " + str(datetime.datetime.now())
+                                log(texto)
                                 pulsoPortao()
                                 time.sleep(tempo)
                                 print "Fechando.."
                                 telegram_bot.sendMessage (chat_id, "Fechando..")
+                                texto = str(chat_id) + " Fechando.. " + str(datetime.datetime.now())
+                                log(texto)
                                 pulsoPortao()
                                 time.sleep(5)
                                 if (checkPortao() == "fechado"):
                                         print "Portao fechado com sucesso."
                                         telegram_bot.sendMessage (chat_id, "Portao fechado com sucesso.")
                                         ultimoAcionamento = datetime.datetime.now()
+                                        texto = str(chat_id) + " Portao fechado com sucesso " + str(datetime.datetime.now())
+                                        log(texto)
                                 else:
                                         print "Houve um erro ao fechar o portao, favor checar se esta mesmo fechado."
                                         telegram_bot.sendMessage (chat_id, "Houve um erro ao fechar o portao, favor checar se esta mesmo fechado.")
+                                        texto = str(chat_id) + " Falha ao fechar o portao " + str(datetime.datetime.now())
+                                        log(texto)
 
                 except:
                         print "Desculpe, nao entendi!"
                         telegram_bot.sendMessage (chat_id, "Desculpe, nao entendi!")
-
+                        texto = str(chat_id) + " Comando invalido " + str(datetime.datetime.now())
+                        log(texto)
+        
         elif ((command == 'Abrir') or (command == 'abrir')):
                 message = "Portao aberto "
                 #if 'portao' in command:
                 message = message + "com sucesso."
                 if (checkPortao() == "aberto"):
                         message = "Portao ja esta aberto."
+                        texto = str(chat_id) + " Abrir - portao ja estava aberto " + str(datetime.datetime.now())
+                        log(texto)
                 else:
                         pulsoPortao()
                         ultimoAcionamento = datetime.datetime.now()
+                        texto = str(chat_id) + " Abrir - portao aberto com sucesso " + str(datetime.datetime.now())
+                        log(texto)
                 telegram_bot.sendMessage (chat_id, message)
 
         elif ((command == 'Fechar') or (command == 'fechar')):
@@ -91,22 +118,34 @@ def action(msg):
                 message = message + "com sucesso."
                 if (checkPortao() == "fechado"):
                         message = "Portao ja esta fechado."
+                        texto = str(chat_id) + " Fechar - portao ja estava fechado " + str(datetime.datetime.now())
+                        log(texto)
                 else:
                         pulsoPortao()
                         ultimoAcionamento = datetime.datetime.now()
+                        texto = str(chat_id) + " Fechar - portao fechado com sucesso " + str(datetime.datetime.now())
+                        log(texto)
                 telegram_bot.sendMessage (chat_id, message)
 
         elif ((command == 'Portao') or (command == 'portao')):
                 if(GPIO.input(abertoPortao) == 1):
                         message = "O portao esta aberto."
+                        texto = str(chat_id) + " Portao - portao esta aberto " + str(datetime.datetime.now())
+                        log(texto)
                 elif(GPIO.input(abertoPortao) == 0):
                         message = "O portao esta fechado."
+                        texto = str(chat_id) + " Portao - portao esta fechado " + str(datetime.datetime.now())
+                        log(texto)
                 else:
                         message = "Nem aberto e nem fechado."
+                        texto = str(chat_id) + " Portao - Nem aberto e nem fechado " + str(datetime.datetime.now())
+                        log(texto)
                 telegram_bot.sendMessage (chat_id, message)
 
         elif ((command == 'Relatorio') or (command == 'relatorio')):
                 telegram_bot.sendMessage (chat_id, "Ultimo acionamento: " + str(ultimoAcionamento))
+                texto = str(chat_id) + " Relatorio " + str(datetime.datetime.now())
+                log(texto)
 
         elif (('Ajuda' in command) or ('ajuda' in command)):
                 telegram_bot.sendMessage (chat_id, "Abrir [tempo em segundos]")
@@ -116,30 +155,41 @@ def action(msg):
                 telegram_bot.sendMessage (chat_id, "Relatorio | relatorio")
                 telegram_bot.sendMessage (chat_id, "Ajuda | ajuda")
                 telegram_bot.sendMessage (chat_id, "Duvidas ou problemas, entrar em contato com Felipe pelo telefone (11)965370735 ou via email: balmiza.felipe@gmail.com")
-
+                texto = str(chat_id) + " Ajuda - enviado com sucesso " + str(datetime.datetime.now())
+                log(texto)
+        
         elif ((command == "Ativar") or (command == "ativar")):
                 if (ativado == 0):
                         telegram_bot.sendMessage (chat_id, "Ja esta ativado")
+                        texto = str(chat_id) + " Ativar - ja esta ativado " + str(datetime.datetime.now())
+                        log(texto)
                 else:
                         telegram_bot.sendMessage (chat_id, "Sistema ativado")
                         ativado = 0
+                        texto = str(chat_id) + " Ativar - sistema ativado com sucesso " + str(datetime.datetime.now())
+                        log(texto)
 
         elif ((command == "Desativar") or (command == "desativar")):
                 if (ativado == 1):
                         telegram_bot.sendMessage (chat_id, "Ja esta desativado")
+                        texto = str(chat_id) + " Desativar - ja esta desativado " + str(datetime.datetime.now())
+                        log(texto)
                 else:
                         telegram_bot.sendMessage (chat_id, "Sistema desativado")
                         ativado = 1
+                        texto = str(chat_id) + " Desativar - desativado com sucesso " + str(datetime.datetime.now())
+                        log(texto)
+
         else:
                 print "Desculpe, nao entendi!!!"
                 telegram_bot.sendMessage (chat_id, "Desculpe, nao entendi!!!")
-
+        
 telegram_bot = telepot.Bot('812788093:AAExMbZKwLDp_AHbwlaf7CVn6cWo-ci_tnc')
 #print (telegram_bot.getMe())
 
 MessageLoop(telegram_bot, action).run_as_thread()
 print 'Up and Running....'
-chat_id_lista = [892724002, 873945561, 875826898]
+chat_id_lista = [892724002, 873945561, 875826898, 843302394]
 tamanho_lista = len(chat_id_lista)
 portao_inicial = checkPortao()
 
@@ -152,9 +202,13 @@ while 1:
                         for i in range(tamanho_lista):
                                 if (chat_id_lista[i] != ultimo_usuario):
                                         telegram_bot.sendMessage (chat_id_lista[i], "Portao foi aberto")
+                                        texto = "Portao foi aberto " + str(datetime.datetime.now())
+                                        log(texto)
                                 portao_inicial = portao
                 elif (portao == "fechado"):
                         for i in range(tamanho_lista):
                                 if (chat_id_lista[i] != ultimo_usuario):
                                         telegram_bot.sendMessage (chat_id_lista[i], "Portao foi fechado")
+                                        texto = "Portao foi fechado " + str(datetime.datetime.now())
+                                        log(texto)
                                 portao_inicial = portao
