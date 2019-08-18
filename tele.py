@@ -11,7 +11,6 @@ abertoPortao = 23
 ultimoAcionamento = "Portao ainda nao foi acionado"
 ultimo_usuario = 1
 ativado = 0     # 0 - Ativado     1 - Desativado
-#fechadoPortao = 24
 
 # configurando IOs
 now = datetime.datetime.now()
@@ -21,12 +20,10 @@ GPIO.setup(relePortao, GPIO.OUT)                                # gpio 18 como s
 GPIO.output(relePortao, 0)                                      # inicia o tele no estado 0 (desligado)
 GPIO.setup(abertoPortao, GPIO.IN)                               # gpio 23 como entrada
 GPIO.setup(abertoPortao, GPIO.IN, pull_up_down=GPIO.PUD_UP)     # gpio 23 pull up
-#GPIO.setup(fechadoPortao, GPIO.IN)                             # gpio 24 como entrada
-#GPIO.setup(fechadoPortao, GPIO.IN, pull_up_down=GPIO.PUD_UP)   # gpio 24 pull up
 
 def log(texto):
         try:
-                file = open("log.txt","a")
+                file = open("/home/pi/Documents/email-server/log.txt","a")
                 file.write(texto + "\n")
                 file.close()
         except:
@@ -47,17 +44,14 @@ def action(msg):
         global ultimo_usuario
         global ultimoAcionamento
         global ativado
-        #print msg
         chat_id = msg['chat']['id']
         ultimo_usuario = chat_id
-        print chat_id
         command = msg['text']
         print 'Received: %s' % command
         texto = str(chat_id) + " Received: " + command + " " + str(datetime.datetime.now())
         log(texto)
 
         if ((('Abrir' in command) or ('abrir' in command)) and (len(command) > 6)):
-                #print 'Entrou no if'
                 try:
                         lista_command = command.split()
                         tempo = float(lista_command[1])
@@ -90,16 +84,14 @@ def action(msg):
                                         telegram_bot.sendMessage (chat_id, "Houve um erro ao fechar o portao, favor checar se esta mesmo fechado.")
                                         texto = str(chat_id) + " Falha ao fechar o portao " + str(datetime.datetime.now())
                                         log(texto)
-
                 except:
                         print "Desculpe, nao entendi!"
                         telegram_bot.sendMessage (chat_id, "Desculpe, nao entendi!")
                         texto = str(chat_id) + " Comando invalido " + str(datetime.datetime.now())
                         log(texto)
-        
+
         elif ((command == 'Abrir') or (command == 'abrir')):
                 message = "Portao aberto "
-                #if 'portao' in command:
                 message = message + "com sucesso."
                 if (checkPortao() == "aberto"):
                         message = "Portao ja esta aberto."
@@ -114,7 +106,6 @@ def action(msg):
 
         elif ((command == 'Fechar') or (command == 'fechar')):
                 message = "Portao fechado "
-                #if 'portao' in command:
                 message = message + "com sucesso."
                 if (checkPortao() == "fechado"):
                         message = "Portao ja esta fechado."
@@ -157,7 +148,7 @@ def action(msg):
                 telegram_bot.sendMessage (chat_id, "Duvidas ou problemas, entrar em contato com Felipe pelo telefone (11)965370735 ou via email: balmiza.felipe@gmail.com")
                 texto = str(chat_id) + " Ajuda - enviado com sucesso " + str(datetime.datetime.now())
                 log(texto)
-        
+
         elif ((command == "Ativar") or (command == "ativar")):
                 if (ativado == 0):
                         telegram_bot.sendMessage (chat_id, "Ja esta ativado")
@@ -183,7 +174,7 @@ def action(msg):
         else:
                 print "Desculpe, nao entendi!!!"
                 telegram_bot.sendMessage (chat_id, "Desculpe, nao entendi!!!")
-        
+
 telegram_bot = telepot.Bot('812788093:AAExMbZKwLDp_AHbwlaf7CVn6cWo-ci_tnc')
 #print (telegram_bot.getMe())
 
@@ -194,21 +185,25 @@ tamanho_lista = len(chat_id_lista)
 portao_inicial = checkPortao()
 
 while 1:
-        time.sleep(1)
-        #print ultimo_usuario
-        portao = checkPortao()
-        if ((portao != portao_inicial) and (ativado == 0)):
-                if (portao == "aberto"):
-                        for i in range(tamanho_lista):
-                                if (chat_id_lista[i] != ultimo_usuario):
-                                        telegram_bot.sendMessage (chat_id_lista[i], "Portao foi aberto")
-                                        texto = "Portao foi aberto " + str(datetime.datetime.now())
-                                        log(texto)
-                                portao_inicial = portao
-                elif (portao == "fechado"):
-                        for i in range(tamanho_lista):
-                                if (chat_id_lista[i] != ultimo_usuario):
-                                        telegram_bot.sendMessage (chat_id_lista[i], "Portao foi fechado")
-                                        texto = "Portao foi fechado " + str(datetime.datetime.now())
-                                        log(texto)
-                                portao_inicial = portao
+        try:
+                time.sleep(1)
+                #print ultimo_usuario
+                portao = checkPortao()
+                if ((portao != portao_inicial) and (ativado == 0)):
+                        if (portao == "aberto"):
+                                for i in range(tamanho_lista):
+                                        if (chat_id_lista[i] != ultimo_usuario):
+                                                telegram_bot.sendMessage (chat_id_lista[i], "Portao foi aberto")
+                                                texto = "Portao foi aberto " + str(datetime.datetime.now())
+                                                log(texto)
+                                        portao_inicial = portao
+                        elif (portao == "fechado"):
+                                for i in range(tamanho_lista):
+                                        if (chat_id_lista[i] != ultimo_usuario):
+                                                telegram_bot.sendMessage (chat_id_lista[i], "Portao foi fechado")
+                                                texto = "Portao foi fechado " + str(datetime.datetime.now())
+                                                log(texto)
+                                        portao_inicial = portao
+        except:
+                texto = "Falha ao enviar informacao de portao aberto ou fechado " + str(datetime.datetime.now())
+                log(texto)
