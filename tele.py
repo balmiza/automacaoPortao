@@ -45,7 +45,7 @@ def action(msg):
         global ultimoAcionamento
         global ativado
         chat_id = msg['chat']['id']
-        ultimo_usuario = chat_id
+        ultimo_usuario = "nada"
         command = msg['text']
         print 'Received: %s' % command
         texto = str(chat_id) + " Received: " + command + " " + str(datetime.datetime.now())
@@ -53,6 +53,7 @@ def action(msg):
 
         if ((('Abrir' in command) or ('abrir' in command)) and (len(command) > 6)):
                 try:
+                        ultimo_usuario = chat_id
                         lista_command = command.split()
                         tempo = float(lista_command[1])
                         if (tempo < 11):
@@ -91,6 +92,7 @@ def action(msg):
                         log(texto)
 
         elif ((command == 'Abrir') or (command == 'abrir')):
+                ultimo_usuario = chat_id
                 message = "Portao aberto "
                 message = message + "com sucesso."
                 if (checkPortao() == "aberto"):
@@ -105,6 +107,7 @@ def action(msg):
                 telegram_bot.sendMessage (chat_id, message)
 
         elif ((command == 'Fechar') or (command == 'fechar')):
+                ultimo_usuario = chat_id
                 message = "Portao fechado "
                 message = message + "com sucesso."
                 if (checkPortao() == "fechado"):
@@ -204,6 +207,7 @@ while 1:
                                                 texto = "Portao foi fechado " + str(datetime.datetime.now())
                                                 log(texto)
                                         portao_inicial = portao
+                        ultimo_usuario = "sem ultimo usuario "
         except:
                 texto = "Falha ao enviar informacao de portao aberto ou fechado " + str(datetime.datetime.now())
                 log(texto)
