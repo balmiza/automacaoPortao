@@ -5,7 +5,7 @@ import RPi.GPIO as GPIO
 import telepot
 from telepot.loop import MessageLoop
 
-# variaveis globais
+# variaveis globais teste1
 relePortao = 18
 abertoPortao = 23
 ultimoAcionamento = "Portao ainda nao foi acionado"
